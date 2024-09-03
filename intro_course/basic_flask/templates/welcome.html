@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Welcome{% endblock %}
+{% block content %}
+<!--h1>Welcome to my Flask App</h1-->
+<!--We will use JINJA templating to display the username of the user that is logged in-->
+    <div class="w3-text-indigo">
+    <h1>Welcome {{ user }}, you are {{ age }} years old.</h1>
+    </div>
+<!--strong>Hello, World!</strong-->
+<form action="{{ url_for('calculator') }}" method="GET">
+    <button class="w3-indigo"><input type="submit" value="Calculator"></button>
+</form>
+<p><a href="/login">Logout</a></p>
+{% endblock %}
+
+<!--This is HTML comment-->

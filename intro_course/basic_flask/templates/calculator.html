@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+ <form action="/calculator" method="post">
+     <div class="w3-text-indigo">
+         <h1>Calculator</h1>
+     </div>
+     <label for="number">Input1:</label>
+     <input type="number" name="num1" step="any required">
+     <br>
+     <label for="number">Input2:</label>
+     <input type="number" name="num2" step="any required">
+     <br>
+     <label for="operatator">Operator:</label>
+     <select name="operator" id="operator" multiple>
+        <option value="+">+</option><option value="-">-</option><option value="*">*</option><option value="/">/</option>
+     </select>
+     <br>
+     <p>Result</p>
+     <form action="submit">
+         <button class="w3-indigo"><input type="submit"></button>
+     </form>
+     <div>
+         The answer is {{ result }}
+     </div>
+ </form>
+<p><a href="/welcome">Home</a></p>
+{% endblock %}
