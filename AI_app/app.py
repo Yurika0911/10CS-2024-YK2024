@@ -1,6 +1,5 @@
 import sqlite3
-
-import cursor
+import requests
 from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -11,10 +10,6 @@ app.secret_key = 'kurosaki'
 def get_db_connection():
     conn = sqlite3.connect('database.db')
     conn.row_factory = sqlite3.Row
-    cursor.execute('''CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, password TEXT NOT NULL)''')
-    cursor.execute('''CREATE TABLE history(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, prompt TEXT, response TEXT, FOREIGN KEY(user_id)REFERENCES users(id))''')
-    conn.commit()
-    conn.close()
     return conn
 
 @app.route('/')
@@ -30,8 +25,7 @@ def login():
     cursor.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password))
     user = cursor.fetchone()
     conn.close()
-
-    if user:
+    if user and check_password_hash(user['password'], password):
         session['user'] = user[1]
         print(user)
         session['age'] = user[3]
@@ -43,6 +37,7 @@ def register():
     username = request.form['username']
     password = request.form['password']
     age = request.form['age']
+    hashed_password = generate_password_hash('your_password', method='sha256')
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
     cursor.execute('INSERT INTO users (username, password, age) VALUES (?, ?, ?)', (username, password, age))
@@ -55,12 +50,38 @@ def logout():
     session.clear()
     return redirect(url_for('home'))
 
-@app.route('/query_llama3')
-def query_llama3(api_key, prompt):
-    headers = {'Authorization': f'Bearer {api_key}'}
+def query_openai(api_key, prompt):
+    headers = {'Authorization':f'Bearer {api_key}'}
     data = {'prompt': prompt, 'max_tokens': 150}
-    response = request.post('https://api.llama3.com/v1/completions', headers=headers, json=data)
+    response = requests.post('https://api.openai.net/v1/search/text', headers=headers, json=data)
     return response.json()
+
+client = OpenAI(api_key=Config.OPENAI_API_KEY)
+@app.route('/')
+def index():
+    return render_template('index.html')
+@app.route('/chat', methods=['POST'])
+def chat():
+    user_message = request.form['message']
+
+    retries = 3
+    for i in range(retries):
+        try:
+            response = client.chat.completions.create(nodel="gpt-3.5-turbo",
+            messages=[
+                {"role": "user", "content": user_message}
+            ],
+            max_tokens=150,
+            temperature=0.7)
+
+            chatbot_reply = response.choices[0].message.content.strip()
+            return {'message': chatbot_reply}
+        except RateLimitError:
+            if i < retries - 1:
+                time.sleep(2 ** i)
+            else:
+                return {'message': "Error: Rate limit exceeded. Please try again later."}
+
 
 if __name__ == '__main__':
     app.run(debug=True)

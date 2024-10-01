@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Chat GPT</h1>
+<from action="/chat" method="post">
+    <label for="message">Message:</label>
+    <input type="text" name="message" id="message" required>
+    <button><input type=submit" value="Send"></button>
+
+{% endblock %}
