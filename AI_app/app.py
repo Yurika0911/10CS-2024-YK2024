@@ -1,9 +1,13 @@
 import sqlite3
+
 import requests
 from flask import Flask, render_template, request, redirect, url_for, session
+from openai import OpenAI
 from werkzeug.security import generate_password_hash, check_password_hash
+from config import Config
 
 app = Flask(__name__)
+# Configure your OpenAI API keyclient = Open AI(api_key=Config.OPENAI_API_KEY)
 app.secret_key = 'kurosaki'
 
 # database connection
@@ -56,10 +60,13 @@ def query_openai(api_key, prompt):
     response = requests.post('https://api.openai.net/v1/search/text', headers=headers, json=data)
     return response.json()
 
-client = OpenAI(api_key=Config.OPENAI_API_KEY)
+# Configure your OpenAI API key
+client = OpenAI(api_key=Config.OPENAI_API_KEY)  # Import openai directly, not OpenAI
+# Default route for index.html
 @app.route('/')
 def index():
     return render_template('index.html')
+# Route for chat.html which sends request to the chatbot
 @app.route('/chat', methods=['POST'])
 def chat():
     user_message = request.form['message']
@@ -67,7 +74,8 @@ def chat():
     retries = 3
     for i in range(retries):
         try:
-            response = client.chat.completions.create(nodel="gpt-3.5-turbo",
+            # Call OpenAI API
+            response = client.chat.completions.create(model="gpt-3.5-turbo",  # Use the cheaper model if possible
             messages=[
                 {"role": "user", "content": user_message}
             ],
@@ -76,12 +84,12 @@ def chat():
 
             chatbot_reply = response.choices[0].message.content.strip()
             return {'message': chatbot_reply}
-        except RateLimitError:
+
+        except RateLimitError:  # Catch the rate limit error properly
             if i < retries - 1:
-                time.sleep(2 ** i)
+                time.sleep(2 ** i)  # Exponential backoff: wait and retry
             else:
                 return {'message': "Error: Rate limit exceeded. Please try again later."}
-
 
 if __name__ == '__main__':
     app.run(debug=True)
