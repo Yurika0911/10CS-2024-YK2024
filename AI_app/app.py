@@ -10,11 +10,25 @@ app = Flask(__name__)
 # Configure your OpenAI API keyclient = Open AI(api_key=Config.OPENAI_API_KEY)
 app.secret_key = 'kurosaki'
 
+# Configure your OpenAI API key
+client = OpenAI(api_key=Config.OPENAI_API_KEY)  # Import openai directly, not OpenAI
+
 # database connection
 def get_db_connection():
     conn = sqlite3.connect('database.db')
     conn.row_factory = sqlite3.Row
     return conn
+
+def init_db():
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute('''CREATE TABLE IF NOT EXISTS users (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        username TEXT NOT NULL UNIQUE,
+                        password TEXT NOT NULL
+                    )''')
+    conn.commit()
+    conn.close()
 
 @app.route('/')
 def home():
@@ -22,32 +36,41 @@ def home():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    username = request.form['username']
-    password = request.form['password']
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password))
-    user = cursor.fetchone()
-    conn.close()
-    if user and check_password_hash(user['password'], password):
-        session['user'] = user[1]
-        print(user)
-        session['age'] = user[3]
-        return redirect(url_for('home'))
-    return 'Login Failed'
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password))
+        user = cursor.fetchone()
+        conn.close()
+        if user and check_password_hash(user['password'], password):
+            session['user'] = user[1]
+            print(user)
+            session['age'] = user[3]
+            return redirect(url_for('home'))
+        return 'Login Failed'
+    return render_template('login.html')
+
+@app.route("/hello_world")
+def hello_world():
+    return 'Hello World!'
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    username = request.form['username']
-    password = request.form['password']
-    age = request.form['age']
-    hashed_password = generate_password_hash('your_password', method='sha256')
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()
-    cursor.execute('INSERT INTO users (username, password, age) VALUES (?, ?, ?)', (username, password, age))
-    conn.commit()
-    conn.close()
-    return redirect(url_for('login'))
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        age = request.form['age']
+        hashed_password = generate_password_hash('your_password', method='pbkdf2:sha256')
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        cursor.execute('INSERT INTO users (username, password, age) VALUES (?, ?, ?)', (username, password, age))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('login'))
+    return render_template('register.html')
 
 @app.route('/logout')
 def logout():
@@ -60,12 +83,6 @@ def query_openai(api_key, prompt):
     response = requests.post('https://api.openai.net/v1/search/text', headers=headers, json=data)
     return response.json()
 
-# Configure your OpenAI API key
-client = OpenAI(api_key=Config.OPENAI_API_KEY)  # Import openai directly, not OpenAI
-# Default route for index.html
-@app.route('/')
-def index():
-    return render_template('index.html')
 # Route for chat.html which sends request to the chatbot
 @app.route('/chat', methods=['POST'])
 def chat():

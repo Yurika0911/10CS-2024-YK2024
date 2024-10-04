@@ -16,12 +16,5 @@
         </library>
       </libraries>
     </data-source>
-    <data-source source="LOCAL" name="database" uuid="ca4532ac-f72b-4189-9b3b-9c11faae8b0b">
-      <driver-ref>sqlite.xerial</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/AI_app/database</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
   </component>
 </project>
