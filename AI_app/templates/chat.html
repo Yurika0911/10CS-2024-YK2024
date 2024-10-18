@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Chat GPT</h1>
-<from action="/chat" method="post">
-    <label for="message">Message:</label>
-    <input type="text" name="message" id="message" required>
-    <button><input type=submit" value="Send"></button>
-</from>
+    <div class="w3-text-indigo">
+        <h1>Welcome {{ user }}, you are {{ age }} years old.</h1>
+    </div>
+    <a href="/llama">Go to use Llama AI</a>
+    <br>
+    <a href="/login">Logout</a>
 {% endblock %}

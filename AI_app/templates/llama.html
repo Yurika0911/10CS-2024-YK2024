@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <head>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 600px;
+                margin: auto;
+                padding: 20px;
+            }
+            #chat {
+                border: 1px solid #ccc;
+                padding: 10px;
+                height: 300px;
+                overflow-y: scroll;
+                margin-bottom: 10px;
+            }
+            .user { color: mediumseagreen; }
+            .chatbot { color: green; }
+        </style>
+    </head>
+    <body>
+        <div class="w3-text-indigo">
+        <h1>Llama 3.2</h1>
+        </div>
+        <h2>Your Chat History:</h2>
+        <ul>
+            {% if chat_history %}
+                {% for chat in chat_history %}
+                    <li>
+                        <strong>You:</strong> {{ chat.prompt }}<br>
+                        <strong>Assistant:</strong> {{ chat.response }}
+                    </li>
+                {% endfor %}
+            {% else %}
+                <li>No chat history found.</li>
+            {% endif %}
+        </ul>
+        <form id="chat-form" action="/llama" method="post">
+            <h6>You: </h6><input type="text" name="input" required>
+            <button type="submit" class="w3-indigo">Send</button>
+        </form>
+        <br>
+        <div id="chat">
+            <div id="messages">
+                {% for message in messages %}
+                    <div class="{{ message.role }}">{{ message.content }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        <script>
+            const chat = document.getElementById('chat');
+            chat.scrollTop = chat.scrollHeight;
+        </script>
+    </body>
+<a href="/chat">Go back</a>
+{% endblock %}

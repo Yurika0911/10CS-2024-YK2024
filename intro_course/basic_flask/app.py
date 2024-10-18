@@ -38,7 +38,7 @@ def register():
     conn = sqlite3.connect('basic_flask.db')  # connects to the database
     cursor = conn.cursor()  # creates a cursor object to interact with the database
     # inserts the user details into the user table
-    cursor.execute('INSERT INTO users (username, password, age) VALUES (?, ?, ?)', (username, password, age))
+    cursor.execute('INSERT INTO history (username, password, age) VALUES (?, ?, ?)', (username, password, age))
     conn.commit()  # commits the changes to the database
     conn.close()  # closes the connection to the database
     flash('Use registered successfully!', 'success')  # displays a success message to the user
@@ -55,7 +55,7 @@ def login_post():
     password = request.form['password']
     conn = sqlite3.connect('basic_flask.db')
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password))
+    cursor.execute('SELECT * FROM history WHERE username = ? AND password = ?', (username, password))
     # ? is a placeholder for the values that will be passed in the execute() function
     # (username, password) are the values that will be passed in the execute() function
     # This is a parameterised query to prevent SQL injection attacks
