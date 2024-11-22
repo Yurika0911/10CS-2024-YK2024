@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Quiz Completed!</h1>
+    <p>Thank you for playing, {{ session.get('username', 'Anonymous') }}!</p>
+
+    <h2>Your Score</h2>
+    <p>You scored <strong>{{ score }}</strong> out of <strong>{{ total_questions }}</strong>.</p>
+
+    <a href="{{ url_for('home') }}">Return to Home</a> |
+    <a href="{{ url_for('results') }}">View All Results</a>
+{% endblock %}

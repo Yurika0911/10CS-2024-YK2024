@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <p>Total Results: {{ results|length }}</p>
+    <table>
+        <tr>
+            <th>Username</th>
+            <th>Score</th>
+            <th>Total Questions</th>
+        </tr>
+        {% for result in results %}
+        <tr>
+            <td>{{ result.username }}</td>
+            <td>{{ result.score }}</td>
+            <td>{{ result.total_questions }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="3">No results found.</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="{{ url_for('home') }}">Home</a>
+{% endblock %}

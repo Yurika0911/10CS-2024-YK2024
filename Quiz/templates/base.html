@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        {% block head %}
+    <!--link rel="stylesheet" href="{{url_for('static', filename='style.css') }}"-->
+    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <title>{% block title %}{% endblock %} AI chatbot</title>
+    {% endblock %}
+</head>
+<body class="w3-pale-blue">
+
+   {% block content %}
+   <!-- This is  where the CHILD TEMPLATES will be inserted -->
+   {% endblock %}
+
+</body>
+</html>

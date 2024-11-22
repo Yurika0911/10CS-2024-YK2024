@@ -5,7 +5,7 @@ import sqlite3
 
 # Flask - the web application framework used to build the web application
 # render_template - renders the HTML template
-# request - handles http requests (or input) from the browser (client) to send back to the app.py (server)
+# request - handles http requests (or input) from the browser (client) to send back to the main.py (server)
 # redirect and url_for - used for URL redirection to direct the user to a web page
 # session - manages the user information
 # flash - used to display messages to the user
